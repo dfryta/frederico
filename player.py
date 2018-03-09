@@ -33,6 +33,7 @@ class Player(object):
         self.init_start_position()
 
     def update(self):
+        self.check_if_died()
         key = terminal.read()
         if key == terminal.TK_CLOSE:
             vars.QUIT = True
@@ -76,9 +77,9 @@ class Player(object):
             terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
                          self.world.calculate_draw_y_coordinate(self.position_y),
                          0xE6E8)
-        # Draw player turn
-        terminal.layer(vars.MAP_LAYER)
-        terminal.printf(0, vars.CONSOLE_HEIGHT - 1, "Turn {0}".format(self.turn))
+        # # Draw player turn
+        # terminal.layer(vars.MAP_LAYER)
+        # terminal.printf(0, vars.CONSOLE_HEIGHT - 1, "Turn {0}".format(self.turn))
 
     def get_max_hp(self):
         return 5 + self.stamina * 2
@@ -88,3 +89,11 @@ class Player(object):
 
     def get_next_level_exp_required(self):
         return int(self.level ** 1.75) * 1000
+
+    def check_if_died(self):
+        if self.hp <= 0:
+            self.world.info.add_message("You died!", vars.INFOBAR_DAMAGE)
+            self.world.info.add_message("END GAME", vars.INFOBAR_DAMAGE)
+
+    def take_damage(self, damage, who):
+        self.hp -= damage

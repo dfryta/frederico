@@ -2,13 +2,16 @@ import world
 import vars
 import player
 import gui
+import info
 from bearlibterminal import terminal
 
 class Game(object):
 
     def __init__(self):
-        self.world = world.World(50, 50)
-        self.player = player.Player("Jamie", self.world)
+        self.info = info.InfoBar()
+        self.world = world.World(50, 50, self.info)
+        self.player = player.Player("Frederico", self.world)
+        self.world.create_enemies()
         self.gui = gui.GUI(self.player)
         terminal.open()
         terminal.set("window: title='Frederico', size={0}x{1}".format(vars.CONSOLE_WIDTH, vars.CONSOLE_HEIGHT))
@@ -26,6 +29,7 @@ class Game(object):
         self.world.draw()
         self.player.draw()
         self.gui.draw()
+        self.info.draw()
         terminal.refresh()
 
     def game_loop(self):

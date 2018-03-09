@@ -8,6 +8,7 @@ class GUI(object):
 
     def draw(self):
         x = vars.FIELDS_WIDTH * vars.FIELDS_X_SPACING
+        y = vars.FIELDS_HEIGHT * vars.FIELDS_Y_SPACING
         # Name
         terminal.layer(vars.MAP_LAYER)
         terminal.printf(x, 1, self.player.name)
@@ -25,3 +26,19 @@ class GUI(object):
         # Exp
         terminal.printf(x, 13, "EXP: {0} (next LVL: {1})".format(self.player.exp, self.player.next_level_exp))
         terminal.printf(x, 14, "-" * 28)
+
+        # InfoBar top
+        terminal.put(1, y, 0xE5BA)
+        for i in range(1, 15):
+            terminal.put(1 + i * vars.FIELDS_X_SPACING, y, 0xE5BB)
+        terminal.put(1 + 15 * vars.FIELDS_X_SPACING, y, 0xE5BC)
+        # InfoBar middle
+        terminal.put(1, y + vars.FIELDS_Y_SPACING, 0xE5F3)
+        for i in range(1, 15):
+            terminal.put(1 + i * vars.FIELDS_X_SPACING, y + vars.FIELDS_Y_SPACING, 0xE5F4)
+        terminal.put(1 + 15 * vars.FIELDS_X_SPACING, y + vars.FIELDS_Y_SPACING, 0xE5F5)
+        # InfoBar bottom
+        terminal.put(1, y + 2 * vars.FIELDS_Y_SPACING, 0xE62C)
+        for i in range(1, 15):
+            terminal.put(1 + i * vars.FIELDS_X_SPACING, y + 2 * vars.FIELDS_Y_SPACING, 0xE62D)
+        terminal.put(1 + 15 * vars.FIELDS_X_SPACING, y + 2 * vars.FIELDS_Y_SPACING, 0xE62E)

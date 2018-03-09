@@ -9,10 +9,11 @@ from bearlibterminal import terminal
 
 class World(object):
 
-    def __init__(self, width, height, seed=time.time()):
+    def __init__(self, width, height, info, seed=time.time()):
         self.width = width
         self.height = height
         self.seed = seed
+        self.info = info
         self.terrain_rate = 0.49
         self.x_offset = 0
         self.y_offset = 0
@@ -24,9 +25,6 @@ class World(object):
         self.recognize_continents()
         self.create_stairs()
         self.create_passages()
-        self.create_enemies()
-
-
 
     def draw(self):
         self.draw_map()
