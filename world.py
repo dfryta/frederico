@@ -54,6 +54,13 @@ class World(object):
                 elif 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] == 3:
                     terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE419)
 
+                if self.player.died:
+                    terminal.layer(10)
+                    terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE398)
+                    terminal.layer(11)
+                    terminal.printf(int(vars.CONSOLE_WIDTH/3), int(vars.CONSOLE_HEIGHT / 2), "[color=crimson]YOU DIED! Press R for restart!")
+
+
                 # COORDINATES
                 # terminal.layer(2)
                 # terminal.print(x * 4, y * 2, "  \n  ")

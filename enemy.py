@@ -35,11 +35,12 @@ class Enemy(object):
         self.alerted = False
 
     def update(self):
-        self.search_enemy()
-        if self.is_enemy_in_range():
-            self.attack()
-        else:
-            self.move()
+        if not self.check_if_died():
+            self.search_enemy()
+            if self.is_enemy_in_range():
+                self.attack()
+            else:
+                self.move()
 
     def draw(self):
         # Draw enemy
@@ -57,6 +58,15 @@ class Enemy(object):
                              )
 
     """ <---------------- ### ---------------->"""
+
+    def check_if_died(self):
+        if self.hp <= 0:
+            self.world.info.add_message("{0} died!".format(self.name), vars.INFOBAR_DEFAULT)
+            self.world.enemies.remove(self)
+            del self
+            return True
+        return False
+
 
     def attack(self):
         if self.get_hit():
@@ -167,6 +177,9 @@ class Enemy(object):
             if self.alerted:
                 self.world.info.add_message("You have escaped {0}!".format(self.name), vars.INFOBAR_LOOT_MESSAGE)
             self.alerted = False
+
+    def take_damage(self, damage):
+        self.hp -= damage
 
 
 class Goblin(Enemy):

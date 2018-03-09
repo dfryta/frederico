@@ -3,6 +3,7 @@ import vars
 import player
 import gui
 import info
+import time
 from bearlibterminal import terminal
 
 class Game(object):
@@ -21,8 +22,15 @@ class Game(object):
 
     def update(self):
         self.player.update()
-        for e in self.world.enemies:
-            e.update()
+        if not self.player.died:
+            for e in self.world.enemies:
+                e.update()
+        if self.player.restart:
+            self.info = info.InfoBar()
+            self.world = world.World(50, 50, self.info, seed=time.time())
+            self.player = player.Player("Frederico", self.world)
+            self.world.create_enemies()
+            self.gui = gui.GUI(self.player)
 
     def draw(self):
         terminal.clear()
