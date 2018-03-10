@@ -18,6 +18,7 @@ class World(object):
         self.x_offset = 0
         self.y_offset = 0
         self.board = [[0 for x in range(self.width)] for x in range(self.height)]
+        self.visible_board = [[0 for x in range(self.width)] for x in range(self.height)]
         self.enemies = list()
         self.corpses = list()
         self.player = None
@@ -43,17 +44,18 @@ class World(object):
 
         for y in range(vars.FIELDS_HEIGHT):
             for x in range(vars.FIELDS_WIDTH):
-                terminal.layer(vars.MAP_LAYER)
-                if 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] > 0:
-                    terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE0B1 if ((x + self.x_offset) * (y + self.y_offset)/3) % 2 > 0 else 0xE078)
-                else:
-                    terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE006)
-                terminal.layer(vars.EXTRA_MAP_LAYER)
-                if 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] == 2:
-                    terminal.layer(1)
-                    terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE417)
-                elif 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] == 3:
-                    terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE419)
+                if 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.visible_board[y + self.y_offset][x + self.x_offset] == 1:
+                    terminal.layer(vars.MAP_LAYER)
+                    if 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] > 0:
+                        terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE0B1 if ((x + self.x_offset) * (y + self.y_offset)/3) % 2 > 0 else 0xE078)
+                    else:
+                        terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE006)
+                    terminal.layer(vars.EXTRA_MAP_LAYER)
+                    if 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] == 2:
+                        terminal.layer(1)
+                        terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE417)
+                    elif 0 <= y + self.y_offset < self.height and 0 <= x + self.x_offset < self.width and self.board[y + self.y_offset][x + self.x_offset] == 3:
+                        terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE419)
 
                 if self.player.died:
                     terminal.layer(10)
@@ -87,6 +89,25 @@ class World(object):
                     self.cellurar_automata(x, y)
 
 
+    def uncover_world(self, x, y):
+        # Basic idea is uncover map in distance of 4 fields
+        """
+
+            #
+           ####
+         ######
+         #######
+        ####P####
+        """
+        x_range = [range(-1, 2), range (-2, 3), range(-3, 4), range(-4, 5), range(-4, 5), range(-4, 5), range(-3, 4), range (-2, 3), range(-1, 2)]
+        for idx, y_offset in enumerate(range(-4, 5)):
+            for x_offset in x_range[idx]:
+                if (0 <= x + x_offset < self.width) and (0 <= y + y_offset < self.height):
+                    self.visible_board[y + y_offset][x + x_offset] = 1
+
+
+
+
     def is_taken_by_player(self, x, y):
         # Check if field is taken by player
         return x == self.player.position_x and y == self.player.position_y if self.player else None
@@ -104,7 +125,7 @@ class World(object):
 
     def is_currently_visible(self, x, y):
         # Check if object is currently visible on map
-        return self.x_offset < x < self.x_offset + vars.FIELDS_WIDTH and self.y_offset < y < self.y_offset + vars.FIELDS_HEIGHT
+        return self.x_offset < x < self.x_offset + vars.FIELDS_WIDTH and self.y_offset < y < self.y_offset + vars.FIELDS_HEIGHT and self.visible_board[y][x] == 1
 
     def calculate_draw_x_coordinate(self, x):
         return (x - self.x_offset) * vars.FIELDS_X_SPACING

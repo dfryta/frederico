@@ -12,6 +12,8 @@ class Enemy(object):
 
     ATTACK_RANGE = 1 # Melee
 
+    DETECT_RANGE = 4
+
     IMAGE = 0
     ALERT_IMAGE = 0x224
 
@@ -31,6 +33,7 @@ class Enemy(object):
         self.alert_image = type(self).ALERT_IMAGE
         self.attack_range = type(self).ATTACK_RANGE
         self.name = type(self).NAME
+        self.detect_range = type(self).DETECT_RANGE
 
         self.alerted = False
         self.took_damage = 0
@@ -184,7 +187,7 @@ class Enemy(object):
 
 
     def search_enemy(self):
-        if self.world.calculate_distance(self.world.player.get_coordinates(), self.get_coordinates()) < 6:
+        if self.world.calculate_distance(self.world.player.get_coordinates(), self.get_coordinates()) < self.detect_range:
             if not self.alerted:
                 self.world.info.add_message("You were spotted by {0}!".format(self.name), vars.INFOBAR_LOOT_MESSAGE)
                 self.alerted = True

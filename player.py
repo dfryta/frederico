@@ -35,6 +35,7 @@ class Player(object):
         self.restart = False
 
         self.init_start_position()
+        self.world.uncover_world(self.position_x, self.position_y)
 
     def update(self):
             # Read user key
@@ -81,6 +82,7 @@ class Player(object):
             else:
                 if key == terminal.TK_R:
                     self.restart = True
+            self.world.uncover_world(self.position_x, self.position_y)
 
     def draw(self):
         # Draw player
