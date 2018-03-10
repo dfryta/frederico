@@ -91,22 +91,11 @@ class World(object):
 
     def uncover_world(self, x, y):
         # Basic idea is uncover map in distance of 4 fields
-        """
-
-            #
-           ####
-         ######
-         #######
-        ####P####
-        """
         x_range = [range(-1, 2), range (-2, 3), range(-3, 4), range(-4, 5), range(-4, 5), range(-4, 5), range(-3, 4), range (-2, 3), range(-1, 2)]
         for idx, y_offset in enumerate(range(-4, 5)):
             for x_offset in x_range[idx]:
-                if (0 <= x + x_offset < self.width) and (0 <= y + y_offset < self.height):
+                if (0 <= x + x_offset < self.width) and (0 <= y + y_offset < self.height) and self.sum_neighbourhood(x + x_offset, y + y_offset) > 0:
                     self.visible_board[y + y_offset][x + x_offset] = 1
-
-
-
 
     def is_taken_by_player(self, x, y):
         # Check if field is taken by player
