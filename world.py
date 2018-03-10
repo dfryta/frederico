@@ -19,6 +19,7 @@ class World(object):
         self.y_offset = 0
         self.board = [[0 for x in range(self.width)] for x in range(self.height)]
         self.enemies = list()
+        self.corpses = list()
         self.player = None
         self.generate_world()
         self.process_world(repeat=2)
@@ -60,12 +61,16 @@ class World(object):
                     terminal.layer(11)
                     terminal.printf(int(vars.CONSOLE_WIDTH/3), int(vars.CONSOLE_HEIGHT / 2), "[color=crimson]YOU DIED! Press R for restart!")
 
-
-                # COORDINATES
-                # terminal.layer(2)
-                # terminal.print(x * 4, y * 2, "  \n  ")
-                # terminal.print(x * 4, y * 2, "{0}\n{1}".format(x + self.x_offset, y + self.y_offset))
-                # terminal.layer(1)
+        # Draw corpses
+        for corpse in self.corpses:
+            # Draw enemy
+            x, y = corpse
+            if self.is_currently_visible(x, y):
+                terminal.layer(vars.UNIT_LAYER)
+                terminal.put(self.calculate_draw_x_coordinate(x),
+                             self.calculate_draw_y_coordinate(y),
+                             0xE26D
+                             )
 
 
     def generate_world(self):

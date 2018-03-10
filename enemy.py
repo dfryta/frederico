@@ -33,6 +33,7 @@ class Enemy(object):
         self.name = type(self).NAME
 
         self.alerted = False
+        self.took_damage = 0
 
     def update(self):
         if not self.check_if_died():
@@ -56,6 +57,19 @@ class Enemy(object):
                              self.world.calculate_draw_y_coordinate(self.position_y),
                              0xE000 + self.alert_image
                              )
+        if self.took_damage:
+            terminal.layer(vars.EFFECTS_LAYER)
+            terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
+                         self.world.calculate_draw_y_coordinate(self.position_y),
+                         0xE549
+                         )
+            terminal.layer(vars.LABEL_ON_EFFECTS_LAYER)
+            terminal.printf(self.world.calculate_draw_x_coordinate(self.position_x),
+                         self.world.calculate_draw_y_coordinate(self.position_y),
+                         "[color=crimson]{0}".format(self.took_damage)
+                        )
+            # Reset took damage meter
+            self.took_damage = 0
 
     """ <---------------- ### ---------------->"""
 
@@ -63,6 +77,7 @@ class Enemy(object):
         if self.hp <= 0:
             self.world.info.add_message("{0} died!".format(self.name), vars.INFOBAR_DEFAULT)
             self.world.enemies.remove(self)
+            self.world.corpses.append(self.get_coordinates())
             del self
             return True
         return False
@@ -180,6 +195,7 @@ class Enemy(object):
 
     def take_damage(self, damage):
         self.hp -= damage
+        self.took_damage += damage
 
 
 class Goblin(Enemy):

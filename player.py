@@ -1,5 +1,6 @@
 import random
 import vars
+import time
 from bearlibterminal import terminal
 
 class Player(object):
@@ -29,12 +30,14 @@ class Player(object):
         self.name = name
 
         self.turn = 1
+        self.took_damage = 0
         self.died = False
         self.restart = False
 
         self.init_start_position()
 
     def update(self):
+            # Read user key
             key = terminal.read()
             if key == terminal.TK_CLOSE:
                 vars.QUIT = True
@@ -79,6 +82,28 @@ class Player(object):
                 if key == terminal.TK_R:
                     self.restart = True
 
+    def draw(self):
+        # Draw player
+        terminal.layer(vars.UNIT_LAYER)
+        if self.world.is_currently_visible(self.position_x, self.position_y):
+            terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
+                         self.world.calculate_draw_y_coordinate(self.position_y),
+                         0xE6E8)
+        if self.took_damage > 0:
+            terminal.layer(vars.EFFECTS_LAYER)
+            terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
+                         self.world.calculate_draw_y_coordinate(self.position_y),
+                         0xE549)
+            terminal.layer(vars.LABEL_ON_EFFECTS_LAYER)
+            terminal.printf(self.world.calculate_draw_x_coordinate(self.position_x),
+                         self.world.calculate_draw_y_coordinate(self.position_y),
+                            "[color=crimson]{0}".format(self.took_damage))
+            # Reset took damage meter
+            self.took_damage = 0
+
+    """ <---------------- ### ---------------->"""
+
+
     def attack(self, enemy):
         if self.get_hit(enemy):
             critical = self.get_critical(enemy)
@@ -122,14 +147,6 @@ class Player(object):
         if self.world.y_offset < 0:
             self.world.y_offset = 0
 
-    def draw(self):
-        # Draw player
-        terminal.layer(vars.UNIT_LAYER)
-        if self.world.is_currently_visible(self.position_x, self.position_y):
-            terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
-                         self.world.calculate_draw_y_coordinate(self.position_y),
-                         0xE6E8)
-
         # # Draw player turn
         # terminal.layer(vars.MAP_LAYER)
         # terminal.printf(0, vars.CONSOLE_HEIGHT - 1, "Turn {0}".format(self.turn))
@@ -154,3 +171,4 @@ class Player(object):
 
     def take_damage(self, damage, who):
         self.hp -= damage
+        self.took_damage += damage
