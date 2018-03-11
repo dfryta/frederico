@@ -49,17 +49,19 @@ class Enemy(object):
     def draw(self):
         # Draw enemy
         if self.world.is_currently_visible(self.position_x, self.position_y):
-            terminal.layer(vars.UNIT_LAYER)
-            terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
-                         self.world.calculate_draw_y_coordinate(self.position_y),
-                         0xE000 + self.image
-            )
-            terminal.layer(vars.EFFECTS_LAYER)
-            if self.alerted:
+            if self.world.player.is_able_to_see(self.position_x, self.position_y):
+                terminal.layer(vars.UNIT_LAYER)
                 terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
                              self.world.calculate_draw_y_coordinate(self.position_y),
-                             0xE000 + self.alert_image
-                             )
+                             0xE000 + self.image
+                )
+                terminal.layer(vars.EFFECTS_LAYER)
+                if self.alerted:
+                    terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),
+                                 self.world.calculate_draw_y_coordinate(self.position_y),
+                                 0xE000 + self.alert_image
+                                 )
+
         if self.took_damage:
             terminal.layer(vars.EFFECTS_LAYER)
             terminal.put(self.world.calculate_draw_x_coordinate(self.position_x),

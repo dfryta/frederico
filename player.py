@@ -141,6 +141,9 @@ class Player(object):
     def get_coordinates(self):
         return self.position_x, self.position_y
 
+    def is_able_to_see(self, x, y):
+        return (x, y) in self.world.uncover_world(self.position_x, self.position_y)
+
     def init_start_position(self):
         self.world.x_offset = self.position_x - int(vars.FIELDS_WIDTH / 2)
         self.world.y_offset = self.position_y - int(vars.FIELDS_HEIGHT / 2)
