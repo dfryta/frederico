@@ -60,8 +60,6 @@ class World(object):
                         terminal.printf(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, u"[offset=-8,-8][color=#848484]\u2593\u2593\u2593\u2593")
                         terminal.printf(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING + 1, u"[offset=-8,-8][color=#848484]\u2593\u2593\u2593\u2593")
 
-
-
                 if self.player.died:
                     terminal.layer(10)
                     terminal.put(x * vars.FIELDS_X_SPACING, y * vars.FIELDS_Y_SPACING, 0xE398)
@@ -94,16 +92,135 @@ class World(object):
                     self.cellurar_automata(x, y)
 
 
+    # def uncover_world(self, x, y):
+    #     # Basic idea is uncover map in distance of 6 fields
+    #     result = list()
+    #     x_range = [range(-1, 2), range (-2, 3), range(-3, 4), range(-4, 5), range(-5, 6), range(-6, 7), range(-6, 7), range(-6, 7), range(-5, 6), range(-4, 5), range(-3, 4), range (-2, 3), range(-1, 2)]
+    #     for idx, y_offset in enumerate(range(-6, 7)):
+    #         for x_offset in x_range[idx]:
+    #             if (0 <= x + x_offset < self.width) and (0 <= y + y_offset < self.height) and self.sum_neighbourhood(x + x_offset, y + y_offset) > 0:
+    #                 self.known_board[y + y_offset][x + x_offset] = 1
+    #                 result.append((x + x_offset, y + y_offset))
+    #     return result
+
+
     def uncover_world(self, x, y):
-        # Basic idea is uncover map in distance of 6 fields
+
+        def find_most_right(x):
+            for x_offset in range(x, self.width + 1):
+                if self.board[y][x_offset] == 0:
+                    return x_offset
+
+        def find_most_left(x):
+            for x_offset in list(reversed(range(0, x))):
+                if self.board[y][x_offset] == 0:
+                    return x_offset
+
         result = list()
-        x_range = [range(-1, 2), range (-2, 3), range(-3, 4), range(-4, 5), range(-5, 6), range(-6, 7), range(-6, 7), range(-6, 7), range(-5, 6), range(-4, 5), range(-3, 4), range (-2, 3), range(-1, 2)]
-        for idx, y_offset in enumerate(range(-6, 7)):
-            for x_offset in x_range[idx]:
-                if (0 <= x + x_offset < self.width) and (0 <= y + y_offset < self.height) and self.sum_neighbourhood(x + x_offset, y + y_offset) > 0:
-                    self.known_board[y + y_offset][x + x_offset] = 1
-                    result.append((x + x_offset, y + y_offset))
+        # UP
+        max_left = 0
+        max_right = self.width
+        for y_offset in list(reversed(range(0, y + 1))):
+            self.known_board[y_offset][x] = 1
+            result.append((x, y_offset))
+            if self.board[y_offset][x] == 0:
+                break
+            # left
+            for x_offset in list(reversed(range(max_left, x))):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_left = x_offset
+                    break
+                # if x_offset == max_left:
+                #     if self.board[y_offset][x_offset] == 1:
+                #         max_left -= 1
+            # right
+            for x_offset in range(x, max_right + 1):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_right = x_offset
+                    break
+                # if x_offset == max_right - 1:
+                #     if self.board[y_offset][x_offset] == 1:
+                #         max_right += 1
+
+        # DOWN
+        max_left = 0
+        max_right = self.width
+        for y_offset in range(y, self.height + 1):
+            self.known_board[y_offset][x] = 1
+            result.append((x, y_offset))
+            if self.board[y_offset][x] == 0:
+                break
+            # left
+            for x_offset in list(reversed(range(max_left, x))):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_left = x_offset
+                    break
+            # right
+            for x_offset in range(x, max_right + 1):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_right = x_offset
+                    break
+
+        # LEFT
+        max_top = 0
+        max_bottom = self.height
+        for x_offset in list(reversed(range(0, x + 1))):
+            self.known_board[y][x_offset] = 1
+            result.append((x_offset, y))
+            if self.board[y][x_offset] == 0:
+                break
+            # top
+            for y_offset in list(reversed(range(max_top, y))):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_top = y_offset
+                    break
+            # down
+            for y_offset in range(y, max_bottom + 1):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_bottom = y_offset
+                    break
+
+        # RIGHT
+        max_top = 0
+        max_bottom = self.height
+        for x_offset in range(x, self.width + 1):
+            self.known_board[y][x_offset] = 1
+            result.append((x_offset, y))
+            if self.board[y][x_offset] == 0:
+                break
+            # top
+            for y_offset in list(reversed(range(max_top, y))):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_top = y_offset
+                    break
+            # down
+            for y_offset in range(y, max_bottom + 1):
+                self.known_board[y_offset][x_offset] = 1
+                result.append((x_offset, y_offset))
+                if self.board[y_offset][x_offset] == 0:
+                    max_bottom = y_offset
+                    break
+
+
         return result
+
+
+
+
 
     def is_taken_by_player(self, x, y):
         # Check if field is taken by player

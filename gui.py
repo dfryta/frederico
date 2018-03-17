@@ -27,6 +27,44 @@ class GUI(object):
         terminal.printf(x, 13, "EXP: {0} (next LVL: {1})".format(self.player.exp, self.player.next_level_exp))
         terminal.printf(x, 14, "-" * 28)
 
+        # Character
+
+        terminal.printf(x, 15, "Equipment")
+
+        # Head
+        terminal.layer(vars.MAP_LAYER)
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75), 18, 0xE5F7)
+
+        # Chest
+        #terminal.printf(x + int((vars.CONSOLE_WIDTH - x) / 2 - 1), 19, "Chest")
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75), 21, 0xE5F7)
+
+        # Right hand
+        # terminal.printf(x + int((vars.CONSOLE_WIDTH - x) / 2 - 1), 19, "Right hand")
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75) - int(vars.FIELDS_X_SPACING * 1.5), 21, 0xE5F7)
+
+        # Left hand
+        # terminal.printf(x + int((vars.CONSOLE_WIDTH - x) / 2 - 1), 19, "Left Hand")
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75) + int(vars.FIELDS_X_SPACING * 1.5), 21, 0xE5F7)
+
+        # Boots
+        # terminal.printf(x + int((vars.CONSOLE_WIDTH - x) / 2 - 1), 23, "Legs")
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75), 24, 0xE5F7)
+
+        # Boots
+        #terminal.printf(x + int((vars.CONSOLE_WIDTH - x) / 2 - 1), 23, "Boots")
+        terminal.put(x + int((vars.CONSOLE_WIDTH - x) / 1.75), 27, 0xE5F7)
+
+        terminal.printf(x, 29, "-" * 28)
+
+        # Backpack
+        terminal.printf(x, 30, "Backpack")
+
+        for i in range(5):
+            terminal.put(x + 2 + i * vars.FIELDS_X_SPACING + i * 1, 32, 0xE506)
+            terminal.put(x + 2 + i * vars.FIELDS_X_SPACING + i * 1, 35, 0xE506)
+            terminal.put(x + 2 + i * vars.FIELDS_X_SPACING + i * 1, 38, 0xE506)
+
         # InfoBar top
         terminal.put(1, y, 0xE5BA)
         for i in range(1, 15):
